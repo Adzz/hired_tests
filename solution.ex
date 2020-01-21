@@ -93,3 +93,38 @@ Solution.solution("aa")
 Solution.solution("abbcabc")
 Solution.solution("abcdef")
 Solution.solution("aaaaaaaaabbbbbbbbbbbbaaaaaaaaaaabbbbbbbbbbbbb")
+
+
+defmodule Solution do
+  @doc "longest repeating substring length."
+  def solution(s) do
+    String.graphemes(s)
+    |> find_longest_possible_repeating_substring(0)
+  end
+
+  def find_longest_possible_repeating_substring([], substring_length), do: substring_length
+
+  def find_longest_possible_repeating_substring(
+        graphemes = [first_grapheme | rest],
+        current_longest_sub_string
+      ) do
+    {_, substring_length, _} =
+      Enum.reduce(rest, {[first_grapheme], 1, "CONT"}, fn
+        grapheme, {repeating_chars, length_of_substring, "HALT"} ->
+          {repeating_chars, length_of_substring, "HALT"}
+
+        grapheme, {repeating_chars, length_of_substring, "CONT"} ->
+          if grapheme in repeating_chars do
+            {[grapheme | repeating_chars], length_of_substring + 1, "CONT"}
+          else
+            {repeating_chars, length_of_substring, "HALT"}
+          end
+      end)
+
+    if substring_length > current_longest_sub_string do
+      find_longest_possible_repeating_substring(rest, substring_length)
+    else
+      find_longest_possible_repeating_substring(rest, current_longest_sub_string)
+    end
+  end
+end
